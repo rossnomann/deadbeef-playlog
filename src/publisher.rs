@@ -88,7 +88,7 @@ impl Publisher {
             .client
             .post(&self.url)
             .header(
-                HeaderName::from_static("x-hmac-secret"),
+                HeaderName::from_static("x-hmac-signature"),
                 HeaderValue::from_str(&hex::encode(secret.code()))?,
             )
             .header(CONTENT_TYPE, "application/json")
