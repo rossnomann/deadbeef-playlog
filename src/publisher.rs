@@ -41,6 +41,17 @@ impl Publisher {
     pub fn run(mut self) {
         loop {
             match self.receiver.recv() {
+                Ok(Payload::Event(Event::ConfigChanged(event))) => {
+                    self.url = event.url;
+                    match Hmac::new_varkey(event.secret.as_bytes()) {
+                        Ok(secret) => {
+                            self.secret = secret;
+                        }
+                        Err(err) => {
+                            eprintln!("[playlog] Failed to reload secret: {}", err);
+                        }
+                    }
+                }
                 Ok(Payload::Event(event)) => {
                     if let Err(err) = self.try_publish_event(&event) {
                         eprintln!("[playlog] Failed to publish an event: {}", err);
